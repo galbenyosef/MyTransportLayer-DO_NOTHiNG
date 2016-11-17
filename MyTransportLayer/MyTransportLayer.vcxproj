@@ -114,6 +114,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ip_file_handler.h" />
+    <ClInclude Include="MyBitFields.h" />
+    <ClInclude Include="MyBuffer.h" />
+    <ClInclude Include="MyPacket.h" />
+    <ClInclude Include="MyPacketHandler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
