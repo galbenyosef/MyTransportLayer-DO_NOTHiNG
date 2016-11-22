@@ -36,7 +36,7 @@ public:
 			input.close();
 		}
 
-		unsigned packets_count = buffer.getLength() / mtu;
+		unsigned packets_count = (unsigned) ( (float) buffer.getLength() / mtu + 0.5 );
 
 		packets = new MyPacket[packets_count];
 
@@ -55,30 +55,31 @@ public:
 			if (left < mtu) {
 				data = new unsigned char[left];
 				memcpy(data, buffer.get() + indicator, left);
-				left = 0;
 				data_lngth = left;
+				left = 0;
 			}
 			else {
 				data = new unsigned char[mtu];
 				memcpy(data, buffer.get() + indicator, mtu);
 				indicator += mtu;
-				left -= mtu;
 				data_lngth = mtu;
+				left -= mtu;
 			}
 
 			packets[i].setIP_s(source_ip);
 			packets[i].setIP_d(destination_ip);
-			packets[i].setVrsn(IPv4_PROTOCOL);
+			packets[i].setVrsn(IPv4);
 			packets[i].setPrtcl(143);
 			packets[i].setData(data, data_lngth);
 			packets[i].setChcksm();
+			std::cout << packets[i];
 			i++;
 		}
 
 		output.open(output_file_name, std::ios::binary | std::ios::out);
 		if (output.is_open()) {
-
-			output.write( (char*)packets, i*(sizeof(MyPacket)-sizeof(unsigned char*))+buffer.getLength() );
+			//output.write( (char*)packets, i*(TYPICAL_HEADER_SIZE) + buffer.getLength() );
+			output.write((char*)packets, i*(TYPICAL_HEADER_SIZE)+buffer.getLength());
 			output.close();
 		}
 	}
@@ -99,7 +100,7 @@ public:
 
 			buffer.setBuffer(buf_s);
 
-			input.read((char*)buffer.get(), buf_s);
+			input.read((char*)buffer.get(), 20);
 			input.close();
 		}
 
@@ -118,19 +119,19 @@ public:
 			MyPacket header;
 
 			memcpy(&header, buffer.get() + data_lngth - left, TYPICAL_HEADER_SIZE);
-			left -= header.getHeaderLength();
 			total_headers++;
 			//validate fields
 			if (header.getIP_s() == source_ip && header.getIP_d() == destination_ip
 				&& header.getPrtcl() == prtcl && header.getVrsn() == vrsn) {
 
-				memcpy(tempdata + data_idx, buffer.get() + data_lngth - left, header.getDataLength());
-				data_idx += header.getDataLength();
+				memcpy(tempdata + data_idx, buffer.get() + data_lngth - left, header.getLength());
+				data_idx += header.getLength();
 
 			}
-			left -= header.getDataLength();
-
+			left -= header.getLength();
 			//checksum
+
+			std::cout << header;
 		}
 
 		fixed_size = data_lngth - total_headers;
@@ -145,9 +146,7 @@ public:
 			output.write((char*)data, fixed_size);
 			output.close();
 		}
-
 	}
-
 };
 
 #endif
