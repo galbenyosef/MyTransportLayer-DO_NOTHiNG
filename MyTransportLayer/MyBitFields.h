@@ -29,24 +29,28 @@ public:
 		unsigned value;
 	};
 
-	static auto myByteSwap(unsigned bits, unsigned val) {
+	static unsigned createMask(unsigned a, unsigned b){
 
-		switch (bits) {
+		unsigned r = 0;
 
-			case 16: {
-				auto retval((val >> 8) | (val << 8));
+		for (unsigned i = a; i <= b; i++)
+			r |= 1 << i;
+
+		return r;
+	}
+
+	static unsigned myByteSwap16(unsigned val) {
+
+		unsigned retval((val >> 8) | (val << 8));
 				return retval;
-			}
+	}
+	static unsigned myByteSwap32(unsigned val) {
 
-			case 32: {
-				auto retval(((val >> 24) & 0xff) |  // move byte 3 to byte 0
-					((val << 8) & 0xff0000) | // move byte 1 to byte 2
-					((val >> 8) & 0xff00) |  // move byte 2 to byte 1
-					((val << 24) & 0xff000000)); // byte 0 to byte 3
-				return retval;
-			}
-
-		}
+		unsigned retval(((val >> 24) & 0xff) |  // move byte 3 to byte 0
+			((val << 8) & 0xff0000) | // move byte 1 to byte 2
+			((val >> 8) & 0xff00) |  // move byte 2 to byte 1
+			((val << 24) & 0xff000000)); // byte 0 to byte 3
+		return retval;
 	}
 };
 

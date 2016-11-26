@@ -19,7 +19,7 @@ public:
 bool ip_file_handler::file_to_ip_packets(std::string input_file_name, std::string output_file_name, unsigned source_ip, unsigned destination_ip) {
 
 	MyPacketHandler handler;
-	handler.fragmentize(input_file_name, output_file_name, source_ip, destination_ip,256);
+	handler.fragmentize(input_file_name, output_file_name, source_ip, destination_ip,DATA_BYTES);
 
 	return true;
 }
